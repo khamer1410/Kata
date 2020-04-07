@@ -1,2 +1,0 @@
-# Kata
-Created with CodeSandbox
