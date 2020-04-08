@@ -1,23 +1,17 @@
 import { mockPromise, recursivePromise } from "./index";
 
 describe("recursivePromises scenarios", () => {
-  test("should return array of results", () => {
+  test("should return array of results", async () => {
     const input = [
-      mockPromise(1)
-      // mockPromise(2),
-      // mockPromise(3),
-      // mockPromise(4)
+      mockPromise(1),
+      mockPromise(2),
+      mockPromise(3),
+      mockPromise(4)
     ];
     const output = [1, 2, 3, 4];
-    // expect(user.getUserName(5)).resolves.toEqual('Paul');
-    // expect(recursivePromise(input)).resolves.toEqual(output);
 
-    // const result = await recursivePromise(input);
-    // // console.log(result);
-    recursivePromise(input).then(res => {
-      console.log(res);
-      expect(res).toEqual(output);
-    });
+    expect.assertions(1);
+    await expect(recursivePromise(input)).resolves.toEqual(output);
   });
 
   test("on error should return prev results and error", async () => {
@@ -25,20 +19,32 @@ describe("recursivePromises scenarios", () => {
       mockPromise(1),
       mockPromise(2),
       mockPromise(3, true),
-      mockPromise(4),
-      mockPromise(4),
-      mockPromise(4),
       mockPromise(4)
     ];
 
     const output = [1, 2, "promise error"];
 
-    const result = await recursivePromise(brokenInput);
-    expect(result).toEqual(output);
+    // ASYNC TESTING PATTERNS
+    // handy in async code - make sure you made at least one assertion
+    expect.assertions(1);
+
+    // 1. jest's 'done' callback
+    // recursivePromise(brokenInput).catch(result => {
+    //   console.log(result);
+    //   expect(result).toEqual(output);
+    //   done()
+    // });
+
+    // 2. RETURN a promise
+    // return expect(recursivePromise(brokenInput)).rejects.toEqual(output)
+
+    // 3. Async / await
+    await expect(recursivePromise(brokenInput)).rejects.toEqual(output)
+
   });
 
   test("without arg should throw", () => {
-    expect(() => recursivePromise()).toThrow();
+    return expect(() => recursivePromise()).toThrow();
   });
 
   test("should be called one after another", () => {}); // how to test it ?
